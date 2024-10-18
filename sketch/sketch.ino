@@ -31,13 +31,8 @@ http://www.schmalzhaus.com/EasyDriver/Examples/EasyDriverExamples.html
 //Declare pin functions on stirrer motor potentiometer
 #define POT A0
 
-//Declare pin functions on rotary encoder
-#define BUTTON 21
-#define ROT_ENC_D3 19
-#define ROT_ENC_D2 20
-
 //Declare pin functions on LCD
-#define POT_ A0
+#define POT A0
 
 //Declare pin functions on SD card module
 #define CS 10
@@ -46,10 +41,37 @@ http://www.schmalzhaus.com/EasyDriver/Examples/EasyDriverExamples.html
 #define MISO 13
 
 //Declare pin functions on end switches
-#define POT__ A0
+#define POT A0
 
 //Declare pin functions on thermistor
-#define POT___ A1
+#define POT A1
+
+//Declare pin functions on LCD
+#define NOKIA_RST A12
+#define NOKIA_CE A11
+#define NOKIA_DC A13
+#define NOKIA_DIN A14
+#define NOKIA_CLK A15
+#define NOKIA_NOTUSED A10
+
+//Declare pin functions on rotary encoder
+#define BUTTON 21
+#define ROT_ENC_D3 19
+#define ROT_ENC_D2 20
+
+#include <NOKIA5110_TEXT.h>
+
+
+// Create an LCD object
+NOKIA5110_TEXT mylcd(NOKIA_RST, NOKIA_CE, NOKIA_DC, NOKIA_DIN, NOKIA_CLK);
+#define inverse  false
+#define contrast 0xBF // default is 0xBF set in LCDinit, Try 0xB1 - 0xBF if your display is too dark/dim
+#define bias 0x12 // LCD bias mode 1:48: Try 0x12, 0x13 or 0x14
+
+/**
+ * Or, if you would like to control the backlight on your own, init the lcd without the last argument
+ * Nokia_LCD lcd(13, 12, 11, 10, 9);
+*/
 
 //Declare variables for functions
 char user_input;
@@ -57,68 +79,19 @@ int x;
 int y;
 int state;
 
-char BUTTON_WAS_PRESSED = 0;
-char ROT_ENC_D2_WAS_PRESSED = 0;
-char ROT_ENC_D3_WAS_PRESSED = 0;
-char ROT_ENC_STATE = 0;
+int rotary = 20;
+int previous_rotary = 20;
 
-void buttonInterrupt() {
-  BUTTON_WAS_PRESSED = 1;
-}
-void rotEncD2Interrupt() {
-  char high = digitalRead(ROT_ENC_D2);
-  switch(ROT_ENC_STATE) {
-    case 0:
-      if (high){
-        ROT_ENC_STATE = 1;
-      }
-      break;
-    case 2:
-      if (!high){
-        ROT_ENC_STATE = 3;
-      }
-      break;
-      
-    case 5:
-      if (high){
-        ROT_ENC_STATE = 6;
-      }
-      break;
-    case 7:
-      if (!high){
-        ROT_ENC_STATE = 8;
-      }
-      break;
-  }
-}
-void rotEncD3Interrupt() {
-  char high = digitalRead(ROT_ENC_D3);
-  switch(ROT_ENC_STATE) {
-    
-    case 1:
-      if(high){
-        ROT_ENC_STATE = 2;
-      }
-      break;
-    case 3:
-      if(!high){
-        ROT_ENC_STATE = 4;
-      }
-      break;
+#include <EncoderButton.h>
+EncoderButton eb1(ROT_ENC_D2, ROT_ENC_D3, BUTTON);
 
-
-    case 0:
-      if(high){
-        ROT_ENC_STATE = 5;
-      }
-      break;
-    case 6:
-      if(!high){
-        ROT_ENC_STATE = 7;
-      }
-      break;
-
-  }
+// Create one or more callback functions 
+void onEb1Encoder(EncoderButton& eb) {
+  Serial.print("eb1 incremented by: ");
+  Serial.println(eb.increment());
+  Serial.print("eb1 position is: ");
+  Serial.println(eb.position());
+  rotary += eb.increment();
 }
 
 void setup() {
@@ -127,55 +100,10 @@ void setup() {
   pinMode(MS1, OUTPUT);
   pinMode(MS2, OUTPUT);
   pinMode(EN, OUTPUT);
-  pinMode(BUTTON, INPUT_PULLUP);
-  pinMode(ROT_ENC_D2, INPUT_PULLUP);
-  pinMode(ROT_ENC_D3, INPUT_PULLUP);
-  
   resetEDPins(); //Set step, direction, microstep and enable pins to default states
   Serial.begin(9600); //Open Serial connection for debugging
   Serial.println("Begin motor control");
   Serial.println();
-
-  
-  int interrupt_id = digitalPinToInterrupt(BUTTON);
-  if (interrupt_id == -1) {
-    Serial.println("Error: BUTTON is not an interrupt pin");
-    exit(1);
-  }
-  String s = String("For BUTTON pin is  ");
-  s.concat(BUTTON);
-  s.concat(" and interrupt ID is ");
-  s.concat(interrupt_id);
-  Serial.println(s);
-  attachInterrupt(interrupt_id, buttonInterrupt, FALLING);
-  Serial.println("Interrupt attached");
-  
-  interrupt_id = digitalPinToInterrupt(ROT_ENC_D2);
-  if (interrupt_id == -1) {
-    Serial.println("Error: ROT_ENC_D2 is not an interrupt pin");
-    exit(1);
-  }
-  s = String("For ROT_ENC_D2 pin is ");
-  s.concat(ROT_ENC_D2);
-  s.concat(" and interrupt ID is ");
-  s.concat(interrupt_id);
-  Serial.println(s);
-  attachInterrupt(interrupt_id, rotEncD2Interrupt, CHANGE);
-  Serial.println("Interrupt attached");
-  
-  interrupt_id = digitalPinToInterrupt(ROT_ENC_D3);
-  if (interrupt_id == -1) {
-    Serial.println("Error: ROT_ENC_D3 is not an interrupt pin");
-    exit(1);
-  }
-  s = String("For ROT_ENC_D3 pin is ");
-  s.concat(ROT_ENC_D3);
-  s.concat(" and interrupt ID is ");
-  s.concat(interrupt_id);
-  Serial.println(s);
-  attachInterrupt(interrupt_id, rotEncD3Interrupt, CHANGE);
-  Serial.println("Interrupt attached");
-
   //Print function list for user selection
   Serial.println("Enter number for control option:");
   Serial.println("1. Turn at default microstep mode.");
@@ -183,53 +111,52 @@ void setup() {
   Serial.println("3. Turn at 1/8th microstep mode.");
   Serial.println("4. Step forward and reverse directions.");
   Serial.println();
+  mylcd.LCDInit(inverse, contrast, bias); // init the lCD
+  mylcd.LCDClear(); // clear whole screen
+  mylcd.LCDFont(LCDFont_Default); // Font 1 default
+  Serial.println("Okay now the LCD should be on.");
+  
+  eb1.setEncoderHandler(onEb1Encoder);
 }
 
 //Main loop
 void loop() {
-  while(Serial.available() || BUTTON_WAS_PRESSED || ROT_ENC_STATE == 8 || ROT_ENC_STATE == 4){
+  eb1.update();
+  if (rotary != previous_rotary) {
       
-      if (BUTTON_WAS_PRESSED == 1) {
-        Serial.println("BUTTON interrupt fired");
-        BUTTON_WAS_PRESSED = 0;
+    mylcd.LCDClear(); // clear whole screen
+    mylcd.LCDgotoXY(rotary, 2);
+    mylcd.LCDString("*");
+
+    previous_rotary = rotary;
+    
+  }
+  while(Serial.available()){
+      user_input = Serial.read(); //Read user input and trigger appropriate function
+      digitalWrite(EN, LOW); //Pull enable pin low to allow motor control
+      if (user_input == '1')
+      {
+         StepForwardDefault();
       }
-      else if (ROT_ENC_STATE == 4) {
-        Serial.println("ROT_ENC is a Right");
-          StepForwardDefault();
-        ROT_ENC_STATE = 0;
+      else if(user_input == '2')
+      {
+        ReverseStepDefault();
       }
-      else if (ROT_ENC_STATE == 8) {
-        Serial.println("ROT_ENC is a Left");
-          ReverseStepDefault();
-        ROT_ENC_STATE = 0;
+      else if(user_input == '3')
+      {
+        SmallStepMode();
       }
-      else if (Serial.available()){
-        user_input = Serial.read(); //Read user input and trigger appropriate function
-        digitalWrite(EN, LOW); //Pull enable pin low to allow motor control
-        if (user_input == '1')
-        {
-          StepForwardDefault();
-        }
-        else if(user_input == '2')
-        {
-          ReverseStepDefault();
-        }
-        else if(user_input == '3')
-        {
-          SmallStepMode();
-        }
-        else if(user_input == '4')
-        {
-          ForwardBackwardStep();
-        }
-        else if(user_input == 'F' || user_input == 'R' || user_input == 'f' || user_input == 'r')
-        {
-          ShanesCustomCrapRoutine(user_input);
-        }
-        else
-        {
-          Serial.println("Invalid option entered.");
-        }
+      else if(user_input == '4')
+      {
+        ForwardBackwardStep();
+      }
+      else if(user_input == 'F' || user_input == 'R' || user_input == 'f' || user_input == 'r')
+      {
+        ShanesCustomCrapRoutine(user_input);
+      }
+      else
+      {
+        Serial.println("Invalid option entered.");
       }
       resetEDPins();
   }
@@ -243,15 +170,11 @@ void resetEDPins()
   digitalWrite(MS1, LOW);
   digitalWrite(MS2, LOW);
   digitalWrite(EN, HIGH);
-  
 }
 
 char* MESSAGETOTHEWORLD = "Doing whatever Shanes routine does";
 
-const int BIG_REPS_TO_360_DEGREES = 1000;
-const int SMOL_REPS_TO_360_DEGREES = 8000;
-
-// Definitely Not Default is it
+// Definitely Not Default
 void ShanesCustomCrapRoutine(char direction)
 {
   Serial.println(MESSAGETOTHEWORLD);
@@ -268,6 +191,10 @@ void ShanesCustomCrapRoutine(char direction)
   s.concat(" DelayBetweenReps:");
   s.concat(input_delay2);
   Serial.println(s);
+  
+  mylcd.LCDClear(); // clear whole screen
+  mylcd.LCDgotoXY(0, 0);
+  mylcd.LCDString(s.c_str());
 
   if (direction == 'R' || direction == 'r') {
     digitalWrite(PIN_DIR, HIGH); //Pull direction pin high to move "backward"
@@ -299,7 +226,7 @@ void StepForwardDefault()
 {
   Serial.println("Moving forward at default step mode.");
   digitalWrite(PIN_DIR, LOW); //Pull direction pin low to move "forward"
-  for(x= 0; x<BIG_REPS_TO_360_DEGREES/8; x++)  //Loop the forward stepping enough times for motion to be visible
+  for(x= 0; x<3000; x++)  //Loop the forward stepping enough times for motion to be visible
   {
     digitalWrite(PIN_STEP,HIGH); //Trigger one step forward
     delay(1);
@@ -315,7 +242,7 @@ void ReverseStepDefault()
 {
   Serial.println("Moving in reverse at default step mode.");
   digitalWrite(PIN_DIR, HIGH); //Pull direction pin high to move in "reverse"
-  for(x= 0; x<BIG_REPS_TO_360_DEGREES/8; x++)  //Loop the stepping enough times for motion to be visible
+  for(x= 0; x<1000; x++)  //Loop the stepping enough times for motion to be visible
   {
     digitalWrite(PIN_STEP,HIGH); //Trigger one step
     delay(1);
@@ -333,7 +260,7 @@ void SmallStepMode()
   digitalWrite(PIN_DIR, HIGH); //Pull direction pin low to move "forward"
   digitalWrite(MS1, HIGH); //Pull MS1, and MS2 high to set logic to 1/8th microstep resolution
   digitalWrite(MS2, HIGH);
-  for(x= 0; x<50; x++)  //Loop the forward stepping enough times for motion to be visible
+  for(x= 0; x<2000; x++)  //Loop the forward stepping enough times for motion to be visible
   {
     digitalWrite(PIN_STEP,HIGH); //Trigger one step forward
     delay(4);
