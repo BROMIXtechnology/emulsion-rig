@@ -251,7 +251,7 @@ char* MESSAGETOTHEWORLD = "Doing whatever Shanes routine does";
 const int BIG_REPS_TO_360_DEGREES = 1000;
 const int SMOL_REPS_TO_360_DEGREES = 8000;
 
-// Definitely Not Default
+// Definitely Not Default is it
 void ShanesCustomCrapRoutine(char direction)
 {
   Serial.println(MESSAGETOTHEWORLD);
