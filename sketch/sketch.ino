@@ -115,6 +115,8 @@ void setup() {
   mylcd.LCDClear(); // clear whole screen
   mylcd.LCDFont(LCDFont_Default); // Font 1 default
   Serial.println("Okay now the LCD should be on.");
+  mylcd.LCDString("doit doit doit");
+  delay(5);
   
   eb1.setEncoderHandler(onEb1Encoder);
 }
