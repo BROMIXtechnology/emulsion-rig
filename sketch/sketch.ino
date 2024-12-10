@@ -106,18 +106,12 @@ long millis_since_start = 0;
 bool last_switch_state = false;
 
 // Create one or more callback functions 
-void onEb1Encoder(EncoderButton& eb) {
-  Serial.print("eb1 incremented by: ");
-  Serial.println(eb.increment());
-  Serial.print("eb1 position is: ");
-  Serial.println(eb.position());
+// void onEb1Encoder(EncoderButton& eb) {
+//   Serial.print("eb1 incremented by: ");
+//   Serial.println(eb.increment());
+//   Serial.print("eb1 position is: ");
+//   Serial.println(eb.position());
   rotary += eb.increment();
-}
-
-void onEb1Button(EncoderButton& eb) {
-  if (eb.isPressed()) {
-    pushed_the_button_like_the_sugababes = true;
-  }
 }
 
 void setup() {
@@ -165,9 +159,6 @@ void loop() {
   eb1.update();
   button2.update();
   button3.update();
-  if (making_the_pizza == PIZZA_SPINNING){
-    SpinThePie();
-  }
   if (button2.pressed() || button3.pressed()) {
     switch(making_the_pizza) {
       case PIZZA_TABLE_IS_EMPTY: {
@@ -182,6 +173,9 @@ void loop() {
       }
     }
   }
+  if (making_the_pizza == PIZZA_SPINNING){
+    SpinThePie();
+  }
   if (rotary != previous_rotary) {
       
     mylcd.LCDClear(); // clear whole screen
@@ -191,35 +185,35 @@ void loop() {
     previous_rotary = rotary;
     
   }
-  while(Serial.available()){
-      user_input = Serial.read(); //Read user input and trigger appropriate function
-      digitalWrite(EN, LOW); //Pull enable pin low to allow motor control
-      if (user_input == '1')
-      {
-         StepForwardDefault();
-      }
-      else if(user_input == '2')
-      {
-        ReverseStepDefault();
-      }
-      else if(user_input == '3')
-      {
-        SmallStepMode();
-      }
-      else if(user_input == '4')
-      {
-        ForwardBackwardStep();
-      }
-      else if(user_input == 'F' || user_input == 'R' || user_input == 'f' || user_input == 'r')
-      {
-        ShanesCustomCrapRoutine(user_input);
-      }
-      else
-      {
-        Serial.println("Invalid option entered.");
-      }
-      resetEDPins();
-  }
+  // while(Serial.available()){
+  //     user_input = Serial.read(); //Read user input and trigger appropriate function
+  //     digitalWrite(EN, LOW); //Pull enable pin low to allow motor control
+  //     if (user_input == '1')
+  //     {
+  //        StepForwardDefault();
+  //     }
+  //     else if(user_input == '2')
+  //     {
+  //       ReverseStepDefault();
+  //     }
+  //     else if(user_input == '3')
+  //     {
+  //       SmallStepMode();
+  //     }
+  //     else if(user_input == '4')
+  //     {
+  //       ForwardBackwardStep();
+  //     }
+  //     else if(user_input == 'F' || user_input == 'R' || user_input == 'f' || user_input == 'r')
+  //     {
+  //       ShanesCustomCrapRoutine(user_input);
+  //     }
+  //     else
+  //     {
+  //       Serial.println("Invalid option entered.");
+  //     }
+  //     resetEDPins();
+  // }
 }
 
 //Reset Easy Driver pins to default states
@@ -234,52 +228,52 @@ void resetEDPins()
 
 char* MESSAGETOTHEWORLD = "Doing whatever Shanes routine does";
 
-// Definitely Not Default
-void ShanesCustomCrapRoutine(char direction)
-{
-  Serial.println(MESSAGETOTHEWORLD);
-  String user_input_str = Serial.readStringUntil(',');
-  int input_reps = user_input_str.toInt();
-  user_input_str = Serial.readStringUntil(',');
-  int input_delay1 = user_input_str.toInt();
-  user_input_str = Serial.readString();
-  int input_delay2 = user_input_str.toInt();
-  String s = String("Repetitions:");
-  s.concat(input_reps);
-  s.concat(" Delay:");
-  s.concat(input_delay1);
-  s.concat(" DelayBetweenReps:");
-  s.concat(input_delay2);
-  Serial.println(s);
+// // Definitely Not Default
+// void ShanesCustomCrapRoutine(char direction)
+// {
+//   Serial.println(MESSAGETOTHEWORLD);
+//   String user_input_str = Serial.readStringUntil(',');
+//   int input_reps = user_input_str.toInt();
+//   user_input_str = Serial.readStringUntil(',');
+//   int input_delay1 = user_input_str.toInt();
+//   user_input_str = Serial.readString();
+//   int input_delay2 = user_input_str.toInt();
+//   String s = String("Repetitions:");
+//   s.concat(input_reps);
+//   s.concat(" Delay:");
+//   s.concat(input_delay1);
+//   s.concat(" DelayBetweenReps:");
+//   s.concat(input_delay2);
+//   Serial.println(s);
   
-  mylcd.LCDClear(); // clear whole screen
-  mylcd.LCDgotoXY(0, 0);
-  mylcd.LCDString(s.c_str());
+//   mylcd.LCDClear(); // clear whole screen
+//   mylcd.LCDgotoXY(0, 0);
+//   mylcd.LCDString(s.c_str());
 
-  if (direction == 'R' || direction == 'r') {
-    digitalWrite(PIN_DIR, HIGH); //Pull direction pin high to move "backward"
-  } else {
-    digitalWrite(PIN_DIR, LOW); //Pull direction pin low to move "forward"
-  }
+//   if (direction == 'R' || direction == 'r') {
+//     digitalWrite(PIN_DIR, HIGH); //Pull direction pin high to move "backward"
+//   } else {
+//     digitalWrite(PIN_DIR, LOW); //Pull direction pin low to move "forward"
+//   }
 
-  if (direction == 'f' || direction == 'r') {
-    digitalWrite(MS1, HIGH); //Pull MS1, and MS2 high to set logic to 1/8th microstep resolution
-    digitalWrite(MS2, HIGH);
-  }
+//   if (direction == 'f' || direction == 'r') {
+//     digitalWrite(MS1, HIGH); //Pull MS1, and MS2 high to set logic to 1/8th microstep resolution
+//     digitalWrite(MS2, HIGH);
+//   }
 
-  for(x= 0; x<input_reps; x++)  //Loop the forward stepping enough times for motion to be visible
-  {
-    digitalWrite(PIN_STEP,HIGH); //Trigger one step forward
-    delay(input_delay1);
-    digitalWrite(PIN_STEP,LOW); //Pull step pin low so it can be triggered again
-    delay(input_delay1);
-    if(input_delay2) {
-      delay(input_delay2);
-    }
-  }
-  Serial.println("Enter new option");
-  Serial.println();
-}
+//   for(x= 0; x<input_reps; x++)  //Loop the forward stepping enough times for motion to be visible
+//   {
+//     digitalWrite(PIN_STEP,HIGH); //Trigger one step forward
+//     delay(input_delay1);
+//     digitalWrite(PIN_STEP,LOW); //Pull step pin low so it can be triggered again
+//     delay(input_delay1);
+//     if(input_delay2) {
+//       delay(input_delay2);
+//     }
+//   }
+//   Serial.println("Enter new option");
+//   Serial.println();
+// }
 
 void StartPizza()
 {
