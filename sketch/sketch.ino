@@ -165,6 +165,7 @@ void loop() {
   eb1.update();
   button2.update();
   button3.update();
+  SpinThePie();
   if (button2.pressed() || button3.pressed()) {
     switch(making_the_pizza) {
       case PIZZA_TABLE_IS_EMPTY: {
@@ -281,14 +282,14 @@ void ShanesCustomCrapRoutine(char direction)
 void StartPizza()
 {
     mylcd.LCDClear(); // clear whole screen
-    mylcd.LCDgotoXY(5, 5);
+    mylcd.LCDgotoXY(0, 0);
     mylcd.LCDString("How nice, it's moving");
 
     digitalWrite(PIN_DIR, LOW); //Pull direction pin low to move "forward"
     millis_since_swap = 0;
     millis_since_start = 0;
 }
-void ContinuePizza() {
+void SpinThePie() {
   millis_since_start += delta_millis;
   millis_since_swap += delta_millis;
   if (millis_since_swap > 15) {
@@ -303,7 +304,7 @@ void ContinuePizza() {
 
 void StopPizza() {
     mylcd.LCDClear(); // clear whole screen
-    mylcd.LCDgotoXY(5, 5);
+    mylcd.LCDgotoXY(0, 0);
     mylcd.LCDString("Phew that's done");
 }
 
