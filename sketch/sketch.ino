@@ -92,9 +92,15 @@ Bounce2::Button button3 = Bounce2::Button();
 bool pushed_the_button_like_the_sugababes = false;
 
 
-const int BIG_REPS_TO_360_DEGREES = 1000;
-const int SMOL_REPS_TO_360_DEGREES = 8000;
+#define BIG_REPS_TO_360_DEGREES 1000
+#define SMOL_REPS_TO_360_DEGREES 8000
+#define REPS_TO_1ML 360
 
+// flow rate in ml/minute
+// minimum bound 0.1ml/minute
+// maximum bound 60ml in 30 seconds = 120ml/minute
+
+// FLOW RATE is tenth of ml per minute
 
 #define PIZZA_TABLE_IS_EMPTY 0
 #define PIZZA_ORDERED 1
@@ -116,8 +122,11 @@ long total_rotations = 0;
 void onEb1Encoder(EncoderButton& eb) {
   // Serial.print("eb1 incremented by: ");
   // Serial.println(eb.increment());
-  Serial.print("eb1 position is: ");
-  Serial.println(eb.position());
+  Serial.print("flow rate: ");
+  float flowRate = float(rotary) / 10;
+  Serial.print(flowRate);
+  Serial.print("ml/minute");
+  // eb.position()
   rotary += eb.increment();
 }
 
