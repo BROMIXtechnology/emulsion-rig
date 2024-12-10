@@ -293,7 +293,7 @@ void SpinThePie() {
       millis_since_swap = 0;
       last_switch_state = !last_switch_state;
   }
-  if (millis_since_start > 5000) {
+  if (millis_since_start > 15000) {
     StopPizza();
   }
 }
@@ -302,6 +302,7 @@ void StopPizza() {
     mylcd.LCDClear(); // clear whole screen
     mylcd.LCDgotoXY(0, 0);
     mylcd.LCDString("Phew that's done");
+    making_the_pizza = PIZZA_TABLE_IS_EMPTY;
 }
 
 //Default microstep mode function
