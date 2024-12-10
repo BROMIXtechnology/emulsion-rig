@@ -289,6 +289,8 @@ void StartPizza()
     millis_since_start = 0;
 }
 void ContinuePizza() {
+  millis_since_start += delta_millis;
+  millis_since_swap += delta_millis;
   if (millis_since_swap > 15) {
       digitalWrite(PIN_STEP,last_switch_state); //Trigger one step forward
       millis_since_swap = 0;
