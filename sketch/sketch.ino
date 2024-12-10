@@ -92,8 +92,8 @@ Bounce2::Button button3 = Bounce2::Button();
 bool pushed_the_button_like_the_sugababes = false;
 
 
-#define BIG_REPS_TO_360_DEGREES 1000
-#define SMOL_REPS_TO_360_DEGREES 8000
+#define BIG_HALFREPS_TO_360_DEGREES 2000
+#define SMOL_HALFREPS_TO_360_DEGREES 16000
 #define REPS_TO_1ML 360
 
 // flow rate in ml/minute
@@ -110,11 +110,11 @@ bool pushed_the_button_like_the_sugababes = false;
 
 int making_the_pizza = PIZZA_TABLE_IS_EMPTY;
 
-long last_measured_millis = 1;
-long delta_millis = 0;
-long millis_since_swap = 0;
-long millis_since_start = 0;
-long millis_value_that_changes = 15;
+long last_measured_micros = 1;
+long delta_micros = 0;
+long micros_since_swap = 0;
+long micros_since_start = 0;
+long micros_value_that_changes = 15;
 bool last_switch_state = false;
 long total_rotations = 0;
 
@@ -126,24 +126,24 @@ void onEb1Encoder(EncoderButton& eb) {
   float flowRate = float(rotary) / 100;
   Serial.print(flowRate);
   Serial.print("ml/minute");
-  float rotationsPerSecond = flowRate / 60;
-  Serial.print("; ");
-  Serial.print(rotationsPerSecond);
-  Serial.print("rot/s");
-  float rotationsPerMillisecond = rotationsPerSecond * 1000;
-  Serial.print("; ");
-  Serial.print(rotationsPerMillisecond);
-  Serial.print("rot/ms");
-  float millisecondsPerRot = 1000 / rotationsPerSecond;
-  Serial.print("; ");
-  Serial.print(millisecondsPerRot);
-  Serial.print("ms/rot");
-  Serial.println("");
-  float millisecondsPerSwitch = millisecondsPerRot / BIG_REPS_TO_360_DEGREES;
-  Serial.print("; ");
-  Serial.print(millisecondsPerSwitch);
-  Serial.print("ms/switch");
-  Serial.println("");
+  // float rotationsPerSecond = flowRate / 60;
+  // Serial.print("; ");
+  // Serial.print(rotationsPerSecond);
+  // Serial.print("rot/s");
+  // float rotationsPermicrosecond = rotationsPerSecond * 1000;
+  // Serial.print("; ");
+  // Serial.print(rotationsPermicrosecond);
+  // Serial.print("rot/ms");
+  // float microsecondsPerRot = 1000 / rotationsPerSecond;
+  // Serial.print("; ");
+  // Serial.print(microsecondsPerRot);
+  // Serial.print("ms/rot");
+  // Serial.println("");
+  // float microsecondsPerSwitch = microsecondsPerRot / BIG_REPS_TO_360_DEGREES;
+  // Serial.print("; ");
+  // Serial.print(microsecondsPerSwitch);
+  // Serial.print("ms/switch");
+  // Serial.println("");
   rotary += eb.increment();
 }
 
@@ -177,7 +177,7 @@ void setup() {
   mylcd.LCDString("doit doit doit");
   delay(5);
 
-  last_measured_millis = millis();
+  last_measured_micros = micros();
   
   eb1.setEncoderHandler(onEb1Encoder);
   // eb1.setClickHandler(onEb1Button);
@@ -186,9 +186,9 @@ void setup() {
 
 //Main loop
 void loop() {
-  long new_millis = millis();
-  delta_millis = new_millis - last_measured_millis;
-  last_measured_millis = new_millis;
+  long new_micros = micros();
+  delta_micros = new_micros - last_measured_micros;
+  last_measured_micros = new_micros;
   eb1.update();
   button2.update();
   button3.update();
@@ -317,41 +317,41 @@ void StartPizza()
   // digitalWrite(MS2, HIGH);
 
     digitalWrite(PIN_DIR, LOW); //Pull direction pin low to move "forward"
-    millis_since_swap = 0;
-    millis_since_start = 0;
-    millis_value_that_changes = rotary;
+    micros_since_swap = 0;
+    micros_since_start = 0;
+    micros_value_that_changes = rotary;
 }
 void SpinThePie() {
-  millis_since_start += delta_millis;
-  millis_since_swap += delta_millis;
-  if (millis_since_swap > millis_value_that_changes) {
+  micros_since_start += delta_micros;
+  micros_since_swap += delta_micros;
+  if (micros_since_swap > micros_value_that_changes) {
       digitalWrite(PIN_STEP,last_switch_state); //Trigger one step forward
-      millis_since_swap = 0;
+      micros_since_swap = 0;
       last_switch_state = !last_switch_state;
       total_rotations += 1;
       // if (total_rotations % 8 == 0){
       //   Serial.print("rotations: ");
       //   Serial.println(total_rotations);
       // }
-      millis_value_that_changes = rotary;
+      micros_value_that_changes = rotary;
   }
-  // if (millis_since_start > 2000) {
-  //   millis_value_that_changes = 50;
-  // } else if (millis_since_start > 4000)
+  // if (micros_since_start > 2000) {
+  //   micros_value_that_changes = 50;
+  // } else if (micros_since_start > 4000)
   // {
-  //   millis_value_that_changes = 40;
-  // } else if (millis_since_start > 6000)
+  //   micros_value_that_changes = 40;
+  // } else if (micros_since_start > 6000)
   // {
-  //   millis_value_that_changes = 30;
-  // } else if (millis_since_start > 8000)
+  //   micros_value_that_changes = 30;
+  // } else if (micros_since_start > 8000)
   // {
-  //   millis_value_that_changes = 20;
-  // } else if (millis_since_start > 10000)
+  //   micros_value_that_changes = 20;
+  // } else if (micros_since_start > 10000)
   // {
-  //   millis_value_that_changes = 5;
+  //   micros_value_that_changes = 5;
   // }
   
-  if (millis_since_start > 4000) {
+  if (micros_since_start > 4000) {
     StopPizza();
   }
 }
