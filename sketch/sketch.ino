@@ -81,8 +81,8 @@ int x;
 int y;
 int state;
 
-int rotary = 20;
-int previous_rotary = 20;
+int rotary = 1000;
+int previous_rotary = 1000;
 
 #include <EncoderButton.h>
 EncoderButton eb1(ROT_ENC_D2, ROT_ENC_D3);
@@ -116,13 +116,15 @@ long micros_since_swap = 0;
 long micros_since_start = 0;
 long micros_value_that_changes = 15;
 bool last_switch_state = false;
-long total_rotations = 0;
+long total_halfreps = 0;
 
 // Create one or more callback functions 
 void onEb1Encoder(EncoderButton& eb) {
   // Serial.print("eb1 incremented by: ");
   // Serial.println(eb.increment());
-  Serial.print("flow rate: ");
+  Serial.print("value: ");
+  Serial.print(rotary);
+  Serial.print("; flow rate: ");
   float flowRate = float(rotary) / 100;
   Serial.print(flowRate);
   Serial.print("ml/minute");
@@ -328,11 +330,11 @@ void SpinThePie() {
       digitalWrite(PIN_STEP,last_switch_state); //Trigger one step forward
       micros_since_swap = 0;
       last_switch_state = !last_switch_state;
-      total_rotations += 1;
-      // if (total_rotations % 8 == 0){
-      //   Serial.print("rotations: ");
-      //   Serial.println(total_rotations);
-      // }
+      total_halfreps += 1;
+      if (total_halfreps % 8 == 0){
+        Serial.print("halfreps: ");
+        Serial.println(total_halfreps);
+      }
       micros_value_that_changes = rotary;
   }
   // if (micros_since_start > 2000) {
@@ -351,7 +353,7 @@ void SpinThePie() {
   //   micros_value_that_changes = 5;
   // }
   
-  if (micros_since_start > 4000) {
+  if (micros_since_start > 4*1000*1000) {
     StopPizza();
   }
 }
