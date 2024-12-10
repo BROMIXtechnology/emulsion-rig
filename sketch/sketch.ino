@@ -81,7 +81,7 @@ int x;
 int y;
 int state;
 
-int rotary = 1;
+int rotary = 0;
 int previous_rotary = 1;
 
 #include <EncoderButton.h>
@@ -110,13 +110,13 @@ bool pushed_the_button_like_the_sugababes = false;
 
 int making_the_pizza = PIZZA_TABLE_IS_EMPTY;
 
-long last_measured_millis = 1;
-long delta_millis = 0;
-long millis_since_swap = 0;
-long millis_since_start = 0;
-long millis_value_that_changes = 15;
+double last_measured_millis = 1;
+double delta_millis = 0;
+double millis_since_swap = 0;
+double millis_since_start = 0;
+double millis_value_that_changes = 15;
 bool last_switch_state = false;
-long total_rotations = 0;
+double total_rotations = 0;
 
 // Create one or more callback functions 
 void onEb1Encoder(EncoderButton& eb) {
@@ -186,7 +186,7 @@ void setup() {
 
 //Main loop
 void loop() {
-  long new_millis = millis();
+  double new_millis = millis();
   delta_millis = new_millis - last_measured_millis;
   last_measured_millis = new_millis;
   eb1.update();
@@ -326,7 +326,7 @@ void SpinThePie() {
   millis_since_swap += delta_millis;
   if (millis_since_swap > millis_value_that_changes) {
       digitalWrite(PIN_STEP,false); //Trigger one step forward
-      delayMicroseconds(5);
+      delayMicroseconds(600);
       digitalWrite(PIN_STEP,true); //Trigger one step forward
       millis_since_swap = 0;
       total_rotations += 1;
@@ -335,6 +335,7 @@ void SpinThePie() {
       //   Serial.println(total_rotations);
       // }
       millis_value_that_changes = rotary;
+      delayMicroseconds(600);
   }
   // if (millis_since_start > 2000) {
   //   millis_value_that_changes = 50;
@@ -352,7 +353,7 @@ void SpinThePie() {
   //   millis_value_that_changes = 5;
   // }
   
-  if (millis_since_start > 4000) {
+  if (millis_since_start > 40000) {
     StopPizza();
   }
 }
