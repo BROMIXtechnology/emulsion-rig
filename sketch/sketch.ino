@@ -125,8 +125,25 @@ void onEb1Encoder(EncoderButton& eb) {
   Serial.print("flow rate: ");
   float flowRate = float(rotary) / 100;
   Serial.print(flowRate);
-  Serial.println("ml/minute");
-  // eb.position()
+  Serial.print("ml/minute");
+  float rotationsPerSecond = flowRate / 60;
+  Serial.print("; ");
+  Serial.print(rotationsPerSecond);
+  Serial.print("rot/s");
+  float rotationsPerMillisecond = rotationsPerSecond * 1000;
+  Serial.print("; ");
+  Serial.print(rotationsPerMillisecond);
+  Serial.print("rot/ms");
+  float millisecondsPerRot = 1000 / rotationsPerSecond;
+  Serial.print("; ");
+  Serial.print(millisecondsPerRot);
+  Serial.print("ms/rot");
+  Serial.println("");
+  float millisecondsPerSwitch = millisecondsPerRot / BIG_REPS_TO_360_DEGREES;
+  Serial.print("; ");
+  Serial.print(millisecondsPerSwitch);
+  Serial.print("ms/switch");
+  Serial.println("");
   rotary += eb.increment();
 }
 
