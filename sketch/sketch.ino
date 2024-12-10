@@ -59,6 +59,8 @@ http://www.schmalzhaus.com/EasyDriver/Examples/EasyDriverExamples.html
 #define ROT_ENC_D3 19
 #define ROT_ENC_D2 20
 
+#define BIG_BUTTON 14
+
 #include <NOKIA5110_TEXT.h>
 
 
@@ -84,6 +86,7 @@ int previous_rotary = 20;
 
 #include <EncoderButton.h>
 EncoderButton eb1(ROT_ENC_D2, ROT_ENC_D3, BUTTON);
+EncoderButton eb2(BIG_BUTTON);
 bool pushed_the_button_like_the_sugababes = false;
 
 // Create one or more callback functions 
@@ -127,6 +130,7 @@ void setup() {
   
   eb1.setEncoderHandler(onEb1Encoder);
   eb1.setClickHandler(onEb1Button);
+  eb2.setClickHandler(onEb1Button);
 }
 
 //Main loop
