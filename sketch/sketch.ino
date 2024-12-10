@@ -93,6 +93,9 @@ void onEb1Encoder(EncoderButton& eb) {
   Serial.print("eb1 position is: ");
   Serial.println(eb.position());
   rotary += eb.increment();
+}
+
+void onEb1Button(EncoderButton& eb) {
   if (eb.isPressed()) {
     pushed_the_button_like_the_sugababes = true;
   }
@@ -123,6 +126,7 @@ void setup() {
   delay(5);
   
   eb1.setEncoderHandler(onEb1Encoder);
+  eb1.setLongClickHandler(onEb1Button);
 }
 
 //Main loop
@@ -233,14 +237,14 @@ void ShanesCustomCrapRoutine(char direction)
 
 void GoForwardQuiteABit()
 {
-    digitalWrite(PIN_DIR, LOW); //Pull direction pin low to move "forward"
-    
     mylcd.LCDClear(); // clear whole screen
     mylcd.LCDgotoXY(5, 5);
     mylcd.LCDString("How nice, it's moving");
 
-    int input_reps = 3000;
-    int input_delay1 = 1;
+    digitalWrite(PIN_DIR, LOW); //Pull direction pin low to move "forward"
+    
+    int input_reps = 30000;
+    int input_delay1 = 2;
 
     for(x= 0; x<input_reps; x++)  //Loop the forward stepping enough times for motion to be visible
     {
