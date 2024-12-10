@@ -84,6 +84,7 @@ int previous_rotary = 20;
 
 #include <EncoderButton.h>
 EncoderButton eb1(ROT_ENC_D2, ROT_ENC_D3, BUTTON);
+bool pushed_the_button_like_the_sugababes = false;
 
 // Create one or more callback functions 
 void onEb1Encoder(EncoderButton& eb) {
@@ -92,6 +93,9 @@ void onEb1Encoder(EncoderButton& eb) {
   Serial.print("eb1 position is: ");
   Serial.println(eb.position());
   rotary += eb.increment();
+  if (eb.buttonState()) {
+    pushed_the_button_like_the_sugababes = true;
+  }
 }
 
 void setup() {
@@ -124,6 +128,10 @@ void setup() {
 //Main loop
 void loop() {
   eb1.update();
+  if (pushed_the_button_like_the_sugababes){
+    GoForwardQuiteABit();
+    pushed_the_button_like_the_sugababes = false;
+  }
   if (rotary != previous_rotary) {
       
     mylcd.LCDClear(); // clear whole screen
@@ -221,6 +229,29 @@ void ShanesCustomCrapRoutine(char direction)
   }
   Serial.println("Enter new option");
   Serial.println();
+}
+
+void GoForwardQuiteABit()
+{
+    digitalWrite(PIN_DIR, LOW); //Pull direction pin low to move "forward"
+    
+    mylcd.LCDClear(); // clear whole screen
+    mylcd.LCDgotoXY(5, 5);
+    mylcd.LCDString("How nice, it's moving");
+
+    int input_reps = 3000;
+    int input_delay1 = 1;
+
+    for(x= 0; x<input_reps; x++)  //Loop the forward stepping enough times for motion to be visible
+    {
+      digitalWrite(PIN_STEP,HIGH); //Trigger one step forward
+      delay(input_delay1);
+      digitalWrite(PIN_STEP,LOW); //Pull step pin low so it can be triggered again
+      delay(input_delay1);
+    }
+    mylcd.LCDClear(); // clear whole screen
+    mylcd.LCDgotoXY(5, 5);
+    mylcd.LCDString("Phew that's done");
 }
 
 //Default microstep mode function
