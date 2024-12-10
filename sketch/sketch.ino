@@ -91,6 +91,20 @@ Bounce2::Button button2 = Bounce2::Button();
 Bounce2::Button button3 = Bounce2::Button();
 bool pushed_the_button_like_the_sugababes = false;
 
+#define PIZZA_TABLE_IS_EMPTY 0
+#define PIZZA_ORDERED 1
+#define PIZZA_SPINNING 2
+#define PIZZA_BAKING 3
+#define PIZZA_SERVED 4
+
+int making_the_pizza = PIZZA_TABLE_IS_EMPTY;
+
+long last_measured_millis = 1;
+long delta_millis = 0;
+long millis_since_swap = 0;
+long millis_since_start = 0;
+bool last_switch_state = false;
+
 // Create one or more callback functions 
 void onEb1Encoder(EncoderButton& eb) {
   Serial.print("eb1 incremented by: ");
@@ -135,6 +149,8 @@ void setup() {
   Serial.println("Okay now the LCD should be on.");
   mylcd.LCDString("doit doit doit");
   delay(5);
+
+  last_measured_millis = millis();
   
   eb1.setEncoderHandler(onEb1Encoder);
   // eb1.setClickHandler(onEb1Button);
@@ -143,15 +159,25 @@ void setup() {
 
 //Main loop
 void loop() {
+  long new_millis = millis();
+  delta_millis = new_millis - last_measured_millis;
+  last_measured_millis = new_millis;
   eb1.update();
   button2.update();
   button3.update();
   if (button2.pressed() || button3.pressed()) {
-    pushed_the_button_like_the_sugababes = true;
-  }
-  if (pushed_the_button_like_the_sugababes){
-    GoForwardQuiteABit();
-    pushed_the_button_like_the_sugababes = false;
+    switch(making_the_pizza) {
+      case PIZZA_TABLE_IS_EMPTY: {
+        making_the_pizza = PIZZA_SPINNING;
+        StartPizza();
+        break;
+      }
+      case PIZZA_SPINNING: {
+        making_the_pizza = PIZZA_TABLE_IS_EMPTY;
+        StopPizza();
+        break;
+      }
+    }
   }
   if (rotary != previous_rotary) {
       
@@ -252,24 +278,28 @@ void ShanesCustomCrapRoutine(char direction)
   Serial.println();
 }
 
-void GoForwardQuiteABit()
+void StartPizza()
 {
     mylcd.LCDClear(); // clear whole screen
     mylcd.LCDgotoXY(5, 5);
     mylcd.LCDString("How nice, it's moving");
 
     digitalWrite(PIN_DIR, LOW); //Pull direction pin low to move "forward"
-    
-    int input_reps = 30000;
-    int input_delay1 = 2;
+    millis_since_swap = 0;
+    millis_since_start = 0;
+}
+void ContinuePizza() {
+  if (millis_since_swap > 15) {
+      digitalWrite(PIN_STEP,last_switch_state); //Trigger one step forward
+      millis_since_swap = 0;
+      last_switch_state = !last_switch_state;
+  }
+  if (millis_since_start > 5000) {
+    StopPizza();
+  }
+}
 
-    for(x= 0; x<input_reps; x++)  //Loop the forward stepping enough times for motion to be visible
-    {
-      digitalWrite(PIN_STEP,HIGH); //Trigger one step forward
-      delay(input_delay1);
-      digitalWrite(PIN_STEP,LOW); //Pull step pin low so it can be triggered again
-      delay(input_delay1);
-    }
+void StopPizza() {
     mylcd.LCDClear(); // clear whole screen
     mylcd.LCDgotoXY(5, 5);
     mylcd.LCDString("Phew that's done");
