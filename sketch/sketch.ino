@@ -106,11 +106,11 @@ long millis_since_start = 0;
 bool last_switch_state = false;
 
 // Create one or more callback functions 
-// void onEb1Encoder(EncoderButton& eb) {
-//   Serial.print("eb1 incremented by: ");
-//   Serial.println(eb.increment());
-//   Serial.print("eb1 position is: ");
-//   Serial.println(eb.position());
+void onEb1Encoder(EncoderButton& eb) {
+  // Serial.print("eb1 incremented by: ");
+  // Serial.println(eb.increment());
+  // Serial.print("eb1 position is: ");
+  // Serial.println(eb.position());
   rotary += eb.increment();
 }
 
