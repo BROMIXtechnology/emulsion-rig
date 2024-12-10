@@ -85,9 +85,10 @@ int rotary = 20;
 int previous_rotary = 20;
 
 #include <EncoderButton.h>
-EncoderButton eb1(ROT_ENC_D2, ROT_ENC_D3, BUTTON);
+EncoderButton eb1(ROT_ENC_D2, ROT_ENC_D3);
 // EncoderButton eb2(BIG_BUTTON);
 Bounce2::Button button2 = Bounce2::Button();
+Bounce2::Button button3 = Bounce2::Button();
 bool pushed_the_button_like_the_sugababes = false;
 
 // Create one or more callback functions 
@@ -107,8 +108,11 @@ void onEb1Button(EncoderButton& eb) {
 
 void setup() {
   button2.attach( BIG_BUTTON, INPUT_PULLUP ); // USE EXTERNAL PULL-UP
+  button3.attach( BUTTON, INPUT_PULLUP ); // USE EXTERNAL PULL-UP
   button2.interval(5);
+  button3.interval(5);
   button2.setPressedState(LOW); 
+  button3.setPressedState(LOW); 
   pinMode(PIN_STEP, OUTPUT);
   pinMode(PIN_DIR, OUTPUT);
   pinMode(MS1, OUTPUT);
@@ -133,7 +137,7 @@ void setup() {
   delay(5);
   
   eb1.setEncoderHandler(onEb1Encoder);
-  eb1.setClickHandler(onEb1Button);
+  // eb1.setClickHandler(onEb1Button);
   // eb2.setClickHandler(onEb1Button);
 }
 
@@ -141,7 +145,8 @@ void setup() {
 void loop() {
   eb1.update();
   button2.update();
-  if (button2.pressed()) {
+  button3.update();
+  if (button2.pressed() || button3.pressed()) {
     pushed_the_button_like_the_sugababes = true;
   }
   if (pushed_the_button_like_the_sugababes){
