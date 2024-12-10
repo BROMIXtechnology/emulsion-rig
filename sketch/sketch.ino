@@ -123,9 +123,9 @@ void onEb1Encoder(EncoderButton& eb) {
   // Serial.print("eb1 incremented by: ");
   // Serial.println(eb.increment());
   Serial.print("flow rate: ");
-  float flowRate = float(rotary) / 10;
+  float flowRate = float(rotary) / 100;
   Serial.print(flowRate);
-  Serial.print("ml/minute");
+  Serial.println("ml/minute");
   // eb.position()
   rotary += eb.increment();
 }
