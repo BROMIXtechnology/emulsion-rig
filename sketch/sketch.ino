@@ -126,7 +126,7 @@ void setup() {
   delay(5);
   
   eb1.setEncoderHandler(onEb1Encoder);
-  eb1.setLongClickHandler(onEb1Button);
+  eb1.setClickHandler(onEb1Button);
 }
 
 //Main loop
