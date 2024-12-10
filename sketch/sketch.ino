@@ -59,7 +59,7 @@ http://www.schmalzhaus.com/EasyDriver/Examples/EasyDriverExamples.html
 #define ROT_ENC_D3 19
 #define ROT_ENC_D2 20
 
-#define BIG_BUTTON 14
+#define BIG_BUTTON 18
 
 #include <NOKIA5110_TEXT.h>
 
