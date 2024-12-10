@@ -110,13 +110,13 @@ bool pushed_the_button_like_the_sugababes = false;
 
 int making_the_pizza = PIZZA_TABLE_IS_EMPTY;
 
-long last_measured_micros = 1;
-long delta_micros = 0;
-long micros_since_swap = 0;
-long micros_since_start = 0;
-long micros_value_that_changes = 15;
+unsigned long last_measured_micros = 1;
+unsigned long delta_micros = 0;
+unsigned long micros_since_swap = 0;
+unsigned long micros_since_start = 0;
+unsigned long micros_value_that_changes = 15;
 bool last_switch_state = false;
-long total_halfreps = 0;
+unsigned long total_halfreps = 0;
 
 // Create one or more callback functions 
 void onEb1Encoder(EncoderButton& eb) {
@@ -188,7 +188,7 @@ void setup() {
 
 //Main loop
 void loop() {
-  long new_micros = micros();
+  unsigned long new_micros = micros();
   delta_micros = new_micros - last_measured_micros;
   last_measured_micros = new_micros;
   eb1.update();
