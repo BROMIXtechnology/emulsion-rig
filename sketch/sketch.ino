@@ -103,6 +103,7 @@ long last_measured_millis = 1;
 long delta_millis = 0;
 long millis_since_swap = 0;
 long millis_since_start = 0;
+long millis_value_that_changes = 15;
 bool last_switch_state = false;
 
 // Create one or more callback functions 
@@ -284,15 +285,32 @@ void StartPizza()
     digitalWrite(PIN_DIR, LOW); //Pull direction pin low to move "forward"
     millis_since_swap = 0;
     millis_since_start = 0;
+    millis_value_that_changes = 50;
 }
 void SpinThePie() {
   millis_since_start += delta_millis;
   millis_since_swap += delta_millis;
-  if (millis_since_swap > 5) {
+  if (millis_since_swap > millis_value_that_changes) {
       digitalWrite(PIN_STEP,last_switch_state); //Trigger one step forward
       millis_since_swap = 0;
       last_switch_state = !last_switch_state;
   }
+  if (millis_since_start > 250) {
+    
+  } else if (millis_since_start > 500)
+  {
+    millis_value_that_changes = 25;
+  } else if (millis_since_start > 1000)
+  {
+    millis_value_that_changes = 15;
+  } else if (millis_since_start > 1500)
+  {
+    millis_value_that_changes = 10;
+  } else if (millis_since_start > 2000)
+  {
+    millis_value_that_changes = 5;
+  }
+  
   if (millis_since_start > 15000) {
     StopPizza();
   }
