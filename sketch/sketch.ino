@@ -93,7 +93,7 @@ void onEb1Encoder(EncoderButton& eb) {
   Serial.print("eb1 position is: ");
   Serial.println(eb.position());
   rotary += eb.increment();
-  if (eb.buttonState()) {
+  if (eb.isPressed()) {
     pushed_the_button_like_the_sugababes = true;
   }
 }
