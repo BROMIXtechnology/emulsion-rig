@@ -165,7 +165,9 @@ void loop() {
   eb1.update();
   button2.update();
   button3.update();
-  SpinThePie();
+  if (making_the_pizza == PIZZA_SPINNING){
+    SpinThePie();
+  }
   if (button2.pressed() || button3.pressed()) {
     switch(making_the_pizza) {
       case PIZZA_TABLE_IS_EMPTY: {
@@ -292,7 +294,7 @@ void StartPizza()
 void SpinThePie() {
   millis_since_start += delta_millis;
   millis_since_swap += delta_millis;
-  if (millis_since_swap > 15) {
+  if (millis_since_swap > 5) {
       digitalWrite(PIN_STEP,last_switch_state); //Trigger one step forward
       millis_since_swap = 0;
       last_switch_state = !last_switch_state;
