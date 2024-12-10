@@ -312,10 +312,11 @@ void SpinThePie() {
       millis_since_swap = 0;
       last_switch_state = !last_switch_state;
       total_rotations += 1;
-      if (total_rotations % 8 == 0){
-        Serial.print("rotations: ");
-        Serial.println(total_rotations);
-      }
+      // if (total_rotations % 8 == 0){
+      //   Serial.print("rotations: ");
+      //   Serial.println(total_rotations);
+      // }
+      millis_value_that_changes = rotary;
   }
   // if (millis_since_start > 2000) {
   //   millis_value_that_changes = 50;
