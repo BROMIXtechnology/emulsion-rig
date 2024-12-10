@@ -238,7 +238,7 @@ void testdrawline() {
 
 void setup()   {
   Serial.begin(9600);
-Serial.println("PCD test");
+Serial.println("LCD test");
   display.begin();
   // init done
 
@@ -246,61 +246,61 @@ Serial.println("PCD test");
   // for the best viewing!
   display.setContrast(75);
 
-  display.display(); // show splashscreen
-  delay(2000);
-  display.clearDisplay();   // clears the screen and buffer
+  // display.display(); // show splashscreen
+  // delay(2000);
+  // display.clearDisplay();   // clears the screen and buffer
 
-  // draw a single pixel
-  display.drawPixel(10, 10, BLACK);
-  display.display();
-  delay(2000);
-  display.clearDisplay();
+  // // draw a single pixel
+  // display.drawPixel(10, 10, BLACK);
+  // display.display();
+  // delay(2000);
+  // display.clearDisplay();
 
-  // draw many lines
-  testdrawline();
-  display.display();
-  delay(2000);
-  display.clearDisplay();
+  // // draw many lines
+  // testdrawline();
+  // display.display();
+  // delay(2000);
+  // display.clearDisplay();
 
-  // draw rectangles
-  testdrawrect();
-  display.display();
-  delay(2000);
-  display.clearDisplay();
+  // // draw rectangles
+  // testdrawrect();
+  // display.display();
+  // delay(2000);
+  // display.clearDisplay();
 
-  // draw multiple rectangles
-  testfillrect();
-  display.display();
-  delay(2000);
-  display.clearDisplay();
+  // // draw multiple rectangles
+  // testfillrect();
+  // display.display();
+  // delay(2000);
+  // display.clearDisplay();
 
-  // draw mulitple circles
-  testdrawcircle();
-  display.display();
-  delay(2000);
-  display.clearDisplay();
+  // // draw mulitple circles
+  // testdrawcircle();
+  // display.display();
+  // delay(2000);
+  // display.clearDisplay();
 
-  // draw a circle, 10 pixel radius
-  display.fillCircle(display.width()/2, display.height()/2, 10, BLACK);
-  display.display();
-  delay(2000);
-  display.clearDisplay();
+  // // draw a circle, 10 pixel radius
+  // display.fillCircle(display.width()/2, display.height()/2, 10, BLACK);
+  // display.display();
+  // delay(2000);
+  // display.clearDisplay();
 
-  testdrawroundrect();
-  delay(2000);
-  display.clearDisplay();
+  // testdrawroundrect();
+  // delay(2000);
+  // display.clearDisplay();
 
-  testfillroundrect();
-  delay(2000);
-  display.clearDisplay();
+  // testfillroundrect();
+  // delay(2000);
+  // display.clearDisplay();
 
-  testdrawtriangle();
-  delay(2000);
-  display.clearDisplay();
+  // testdrawtriangle();
+  // delay(2000);
+  // display.clearDisplay();
    
-  testfilltriangle();
-  delay(2000);
-  display.clearDisplay();
+  // testfilltriangle();
+  // delay(2000);
+  // display.clearDisplay();
 
   // draw the first ~12 characters in the font
   testdrawchar();
@@ -308,47 +308,47 @@ Serial.println("PCD test");
   delay(2000);
   display.clearDisplay();
 
-  // text display tests
-  display.setTextSize(1);
-  display.setTextColor(BLACK);
-  display.setCursor(0,0);
-  display.println("Hello, world!");
-  display.setTextColor(WHITE, BLACK); // 'inverted' text
-  display.println(3.141592);
-  display.setTextSize(2);
-  display.setTextColor(BLACK);
-  display.print("0x"); display.println(0xDEADBEEF, HEX);
-  display.display();
-  delay(2000);
+  // // text display tests
+  // display.setTextSize(1);
+  // display.setTextColor(BLACK);
+  // display.setCursor(0,0);
+  // display.println("Hello, world!");
+  // display.setTextColor(WHITE, BLACK); // 'inverted' text
+  // display.println(3.141592);
+  // display.setTextSize(2);
+  // display.setTextColor(BLACK);
+  // display.print("0x"); display.println(0xDEADBEEF, HEX);
+  // display.display();
+  // delay(2000);
 
-  // rotation example
-  display.clearDisplay();
-  display.setRotation(1);  // rotate 90 degrees counter clockwise, can also use values of 2 and 3 to go further.
-  display.setTextSize(1);
-  display.setTextColor(BLACK);
-  display.setCursor(0,0);
-  display.println("Rotation");
-  display.setTextSize(2);
-  display.println("Example!");
-  display.display();
-  delay(2000);
+  // // rotation example
+  // display.clearDisplay();
+  // display.setRotation(1);  // rotate 90 degrees counter clockwise, can also use values of 2 and 3 to go further.
+  // display.setTextSize(1);
+  // display.setTextColor(BLACK);
+  // display.setCursor(0,0);
+  // display.println("Rotation");
+  // display.setTextSize(2);
+  // display.println("Example!");
+  // display.display();
+  // delay(2000);
 
-  // revert back to no rotation
-  display.setRotation(0);
+  // // revert back to no rotation
+  // display.setRotation(0);
 
-  // miniature bitmap display
-  display.clearDisplay();
-  display.drawBitmap(30, 16,  logo16_glcd_bmp, 16, 16, 1);
-  display.display();
+  // // miniature bitmap display
+  // display.clearDisplay();
+  // display.drawBitmap(30, 16,  logo16_glcd_bmp, 16, 16, 1);
+  // display.display();
 
-  // invert the display
-  display.invertDisplay(true);
-  delay(1000); 
-  display.invertDisplay(false);
-  delay(1000); 
+  // // invert the display
+  // display.invertDisplay(true);
+  // delay(1000); 
+  // display.invertDisplay(false);
+  // delay(1000); 
 
-  // draw a bitmap icon and 'animate' movement
-  testdrawbitmap(logo16_glcd_bmp, LOGO16_GLCD_WIDTH, LOGO16_GLCD_HEIGHT);
+  // // draw a bitmap icon and 'animate' movement
+  // testdrawbitmap(logo16_glcd_bmp, LOGO16_GLCD_WIDTH, LOGO16_GLCD_HEIGHT);
 }
 
 

@@ -91,6 +91,11 @@ Bounce2::Button button2 = Bounce2::Button();
 Bounce2::Button button3 = Bounce2::Button();
 bool pushed_the_button_like_the_sugababes = false;
 
+
+const int BIG_REPS_TO_360_DEGREES = 1000;
+const int SMOL_REPS_TO_360_DEGREES = 8000;
+
+
 #define PIZZA_TABLE_IS_EMPTY 0
 #define PIZZA_ORDERED 1
 #define PIZZA_SPINNING 2
@@ -105,13 +110,14 @@ long millis_since_swap = 0;
 long millis_since_start = 0;
 long millis_value_that_changes = 15;
 bool last_switch_state = false;
+long total_rotations = 0;
 
 // Create one or more callback functions 
 void onEb1Encoder(EncoderButton& eb) {
   // Serial.print("eb1 incremented by: ");
   // Serial.println(eb.increment());
-  // Serial.print("eb1 position is: ");
-  // Serial.println(eb.position());
+  Serial.print("eb1 position is: ");
+  Serial.println(eb.position());
   rotary += eb.increment();
 }
 
@@ -281,11 +287,13 @@ void StartPizza()
     mylcd.LCDClear(); // clear whole screen
     mylcd.LCDgotoXY(0, 0);
     mylcd.LCDString("How nice, it's moving");
+  // digitalWrite(MS1, HIGH); //Pull MS1, and MS2 high to set logic to 1/8th microstep resolution
+  // digitalWrite(MS2, HIGH);
 
     digitalWrite(PIN_DIR, LOW); //Pull direction pin low to move "forward"
     millis_since_swap = 0;
     millis_since_start = 0;
-    millis_value_that_changes = 50;
+    millis_value_that_changes = rotary;
 }
 void SpinThePie() {
   millis_since_start += delta_millis;
@@ -294,24 +302,29 @@ void SpinThePie() {
       digitalWrite(PIN_STEP,last_switch_state); //Trigger one step forward
       millis_since_swap = 0;
       last_switch_state = !last_switch_state;
+      total_rotations += 1;
+      if (total_rotations % 8 == 0){
+        Serial.print("rotations: ");
+        Serial.println(total_rotations);
+      }
   }
-  if (millis_since_start > 250) {
-    
-  } else if (millis_since_start > 500)
-  {
-    millis_value_that_changes = 25;
-  } else if (millis_since_start > 1000)
-  {
-    millis_value_that_changes = 15;
-  } else if (millis_since_start > 1500)
-  {
-    millis_value_that_changes = 10;
-  } else if (millis_since_start > 2000)
-  {
-    millis_value_that_changes = 5;
-  }
+  // if (millis_since_start > 2000) {
+  //   millis_value_that_changes = 50;
+  // } else if (millis_since_start > 4000)
+  // {
+  //   millis_value_that_changes = 40;
+  // } else if (millis_since_start > 6000)
+  // {
+  //   millis_value_that_changes = 30;
+  // } else if (millis_since_start > 8000)
+  // {
+  //   millis_value_that_changes = 20;
+  // } else if (millis_since_start > 10000)
+  // {
+  //   millis_value_that_changes = 5;
+  // }
   
-  if (millis_since_start > 15000) {
+  if (millis_since_start > 4000) {
     StopPizza();
   }
 }
