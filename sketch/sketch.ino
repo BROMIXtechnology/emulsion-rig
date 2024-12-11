@@ -93,8 +93,8 @@ bool pushed_the_button_like_the_sugababes = false;
 
 
 #define BIG_REPS_TO_360_DEGREES 1000
+#define BIG_REPS_TO_1ML BIG_REPS_TO_360_DEGREES
 #define SMOL_REPS_TO_360_DEGREES 8000
-#define REPS_TO_1ML 360
 
 // flow rate in ml/minute
 // minimum bound 0.1ml/minute
@@ -112,11 +112,16 @@ int making_the_pizza = PIZZA_TABLE_IS_EMPTY;
 
 double last_measured_millis = 1;
 double delta_millis = 0;
-double millis_since_swap = 0;
+double millis_since_rep = 0;
 double millis_since_start = 0;
 double millis_value_that_changes = 15;
 bool last_switch_state = false;
 double total_rotations = 0;
+
+float START_ML_PER_MINUTE = 0.5;
+float END_ML_PER_MINUTE = 3.5;
+float ACCELERATION_PER_MINUTE = 0.1;
+float current_ml_per_minute = START_ML_PER_MINUTE;
 
 // Create one or more callback functions 
 void onEb1Encoder(EncoderButton& eb) {
@@ -317,25 +322,38 @@ void StartPizza()
   // digitalWrite(MS2, HIGH);
 
     digitalWrite(PIN_DIR, LOW); //Pull direction pin low to move "forward"
-    millis_since_swap = 0;
+    millis_since_rep = 0;
     millis_since_start = 0;
     millis_value_that_changes = rotary;
+
+    current_ml_per_minute = START_ML_PER_MINUTE;
 }
 void SpinThePie() {
   millis_since_start += delta_millis;
-  millis_since_swap += delta_millis;
-  if (millis_since_swap > millis_value_that_changes) {
+  millis_since_rep += delta_millis;
+
+  float delta_minutes = float(delta_millis) / 1000.0 / 60;
+
+  if (current_ml_per_minute < END_ML_PER_MINUTE) {
+    current_ml_per_minute += ACCELERATION_PER_MINUTE * delta_minutes;
+  }
+
+  // BIG_REPS_TO_1ML
+  float reps_per_minute = current_ml_per_minute * float(BIG_REPS_TO_1ML);
+  float millis_per_minute = 60000;
+  long millis_between_reps = long(millis_per_minute / reps_per_minute);
+
+  if (millis_since_rep > millis_between_reps) {
       digitalWrite(PIN_STEP,false); //Trigger one step forward
       delayMicroseconds(600);
       digitalWrite(PIN_STEP,true); //Trigger one step forward
-      millis_since_swap = 0;
+      millis_since_rep = 0;
       total_rotations += 1;
       // if (total_rotations % 8 == 0){
       //   Serial.print("rotations: ");
       //   Serial.println(total_rotations);
       // }
-      millis_value_that_changes = rotary;
-      delayMicroseconds(600);
+      delayMicroseconds(50);
   }
   // if (millis_since_start > 2000) {
   //   millis_value_that_changes = 50;
